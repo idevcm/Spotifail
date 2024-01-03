@@ -38,23 +38,13 @@ class Jukebox {
     @Preview(showSystemUi = true, showBackground = true, backgroundColor = 0xFF2D3A3A)
     @Composable
     fun Vertical(){
-        Column (Modifier.fillMaxSize()) {
-            DescriptionText(
-                Modifier
-                    .weight(1f)
-                    .fillMaxSize())
-            AlbumCover(
-                Modifier
-                    .weight(1f)
-                    .fillMaxSize())
-            SliderDisplay(
-                Modifier
-                    .weight(2f)
-                    .fillMaxSize())
-            ButtonDisplay(
-                Modifier
-                    .weight(2f)
-                    .fillMaxSize())
+        Column (Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            DescriptionText()
+            AlbumCover()
+            SliderDisplay()
+            ButtonDisplay()
         }
     }
     @Preview(showSystemUi = true, showBackground = true, backgroundColor = 0xFF2D3A3A,
@@ -63,31 +53,19 @@ class Jukebox {
     @Composable
     fun Horizontal(){
         Row (Modifier.fillMaxSize()) {
-            Column (Modifier.fillMaxSize()){
-                DescriptionText(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxSize())
-                AlbumCover(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxSize())
+            Column (Modifier.weight(1f).fillMaxSize()) {
+                AlbumCover()
             }
-            Column (Modifier.fillMaxSize()){
-                SliderDisplay(
-                    Modifier
-                        .weight(2f)
-                        .fillMaxSize())
-                ButtonDisplay(
-                    Modifier
-                        .weight(2f)
-                        .fillMaxSize())
+            Column (Modifier.weight(1f).fillMaxSize()){
+                DescriptionText()
+                SliderDisplay()
+                ButtonDisplay()
             }
         }
     }
 
     @Composable
-    fun DescriptionText(modifier: Modifier = Modifier) {
+    fun DescriptionText() {
         var SongName by remember {mutableStateOf("Song")}
         var ArtistName by remember {mutableStateOf("Artist")}
 
@@ -97,7 +75,8 @@ class Jukebox {
         Column(modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally){
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center){
             Text(text = "Now Playing",
                 fontWeight = FontWeight.Bold,
                 fontSize = 46.sp,
@@ -112,26 +91,27 @@ class Jukebox {
     }
 
     @Composable
-    fun AlbumCover(modifier: Modifier = Modifier){
+    fun AlbumCover(){
         var AlbumImage by remember {mutableStateOf(R.drawable.testphoto)}
 
-        Box (Modifier.fillMaxWidth()){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ){
             Image(painter = painterResource(id = AlbumImage),
                 contentDescription = "Album Cover Image",
                 contentScale = ContentScale.FillBounds,
-                alignment = Alignment.Center,
                 modifier = Modifier
                     .size(360.dp)
-                    .align(Alignment.TopCenter)
-                    .padding(16.dp)
+                    .padding(24.dp)
                     .clip(RoundedCornerShape(24.dp)),
             )
         }
 
     }
-    @Preview
     @Composable
-    fun SliderDisplay(modifier: Modifier = Modifier) {
+    fun SliderDisplay() {
 
         var songValue by remember {mutableStateOf(0f)}
         var songDuration by remember {mutableStateOf(0f)}
@@ -160,10 +140,10 @@ class Jukebox {
                 .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Text(text = (songValue / 60).toString(),
+                Text(String.format("%.2f", songValue / 60).replace(',', '.'),
                     fontSize = 24.sp,
                     color = arrayMyColor[3])
-                Text(text = (songDuration / 60).toString(),
+                Text(String.format("%.2f", songDuration / 60).replace(',', '.'),
                     fontSize = 24.sp,
                     color = arrayMyColor[3])
             }
@@ -171,7 +151,12 @@ class Jukebox {
     }
 
     @Composable
-    fun ButtonDisplay(modifier: Modifier = Modifier) {
+    fun ButtonDisplay() {
+        var repeatMode by remember {mutableStateOf(false)}
+        var repeatIcon by remember {mutableStateOf(R.drawable.repeat_off_24)}
+        var shuffleMode by remember {mutableStateOf(false)}
+        var shuffleIcon by remember {mutableStateOf(R.drawable.shuffle_off_24)}
+
         val myColors = MyColors()
         val arrayMyColor = myColors.colorList
 
@@ -181,13 +166,16 @@ class Jukebox {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
             TextButton(
-                onClick = { /* TODO */ },
+                onClick = { /* TODO */
+                    repeatMode = !repeatMode
+                    if (repeatMode) repeatIcon = R.drawable.repeat_on_24
+                          else repeatIcon = R.drawable.repeat_off_24},
                 modifier = Modifier
                     .weight(1f)
             ){
                 Icon(
-                    painter = painterResource(id = R.drawable.headphones_24),
-                    contentDescription = "Mix Playlist",
+                    painter = painterResource(id = repeatIcon),
+                    contentDescription = "Repeat Playlist",
                     tint = arrayMyColor[4],
                     modifier = Modifier
                         .size(82.dp)
@@ -235,13 +223,16 @@ class Jukebox {
                 )
             }
             TextButton(
-                onClick = { /* TODO */ },
+                onClick = { /* TODO */
+                    shuffleMode = !shuffleMode
+                    if (shuffleMode) shuffleIcon = R.drawable.shuffle_on_24
+                    else shuffleIcon = R.drawable.shuffle_off_24},
                 modifier = Modifier
                     .weight(1f)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.headphones_24),
-                    contentDescription = "Repeat Playlist",
+                    painter = painterResource(id = shuffleIcon),
+                    contentDescription = "Shuffle Playlist",
                     tint = arrayMyColor[4],
                     modifier = Modifier
                         .size(82.dp)
