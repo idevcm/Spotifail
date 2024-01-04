@@ -3,6 +3,7 @@ package com.alubias.spotifail.scaffold
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,24 +23,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alubias.spotifail.R
 import com.alubias.spotifail.ui.theme.MyColors
-@Preview
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-    fun MyScaffold() {
-        var presses by remember { mutableIntStateOf(0) }
+fun MyScaffold(content: @Composable () -> Unit) {
+    var presses by remember { mutableIntStateOf(0) }
 
-        val myColors = MyColors()
-        val arrayMyColor = myColors.colorList
+    val myColors = MyColors()
+    val arrayMyColor = myColors.colorList
     Scaffold(
         topBar = {
             TopAppBar(
                 colors = topAppBarColors(
                     containerColor = arrayMyColor[0],
-                    titleContentColor =  arrayMyColor[4],
+                    titleContentColor = arrayMyColor[4],
                 ),
                 title = {
                     Row(
@@ -59,7 +60,7 @@ import com.alubias.spotifail.ui.theme.MyColors
                             text = "SpotiFail",
                             color = arrayMyColor[4],
                             modifier = Modifier
-                                .padding(20.dp,0.dp),
+                                .padding(20.dp, 0.dp),
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -104,19 +105,15 @@ import com.alubias.spotifail.ui.theme.MyColors
             }
         },
         containerColor = arrayMyColor[1]
-    ) { innerPadding -> //substitude for the Surface and the navigation
-
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding)
+                .fillMaxSize(), // Add this line
+            verticalArrangement = Arrangement.spacedBy(25.dp),
         ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = ""
-
-            )
+            content()
         }
     }
-    }
+}
 
