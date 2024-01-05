@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alubias.spotifail.model.loginModel
+import com.alubias.spotifail.model.LoginModel
 import com.alubias.spotifail.navigation.GrafoNavegacion
 import com.alubias.spotifail.ui.theme.SpotifailTheme
 
@@ -26,10 +24,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val actividad = this@MainActivity
-                    val loginModel: loginModel by viewModels {
+                    val loginModel: LoginModel by viewModels {
                         object : ViewModelProvider.Factory {
                             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                return loginModel(application) as T
+                                return LoginModel(application) as T
                             }
                         }
                     }
