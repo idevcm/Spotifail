@@ -2,6 +2,7 @@ package com.alubias.spotifail.jukebox
 
 import android.app.Activity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
@@ -39,33 +41,36 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.alubias.spotifail.R
 import com.alubias.spotifail.model.Song
-import com.alubias.spotifail.model.loginModel
+import com.alubias.spotifail.model.LoginModel
 import com.alubias.spotifail.ui.theme.MyColors
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ticker
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun Responsive(actividad: Activity, navController: NavHostController, loginModel: loginModel) {
+fun Responsive(actividad: Activity, navController: NavHostController, loginModel: LoginModel) {
+
     val tamanyo = calculateWindowSizeClass(activity = actividad)
+
     println(tamanyo.widthSizeClass)
-    val selectedSong = loginModel.songList.first()
+    val selectedSong = loginModel.selectedSong.collectAsState()
+
     if (tamanyo.heightSizeClass == WindowHeightSizeClass.Compact) {
-        Horizontal(loginModel, selectedSong)
+        Horizontal(loginModel, selectedSong.value)
     } else {
-        Vertical(loginModel, selectedSong)
+        Vertical(loginModel, selectedSong.value)
     }
 }
 
 @Composable
-fun Vertical(loginModel: loginModel, selectedSong: Song) {
+fun Vertical(loginModel: LoginModel, selectedSong: Song) {
     Column(
         Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MyColors().colorList[1]),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        StaticText()
         DescriptionText(loginModel, selectedSong)
         AlbumCover(loginModel, selectedSong)
         SliderDisplay(loginModel)
@@ -74,10 +79,11 @@ fun Vertical(loginModel: loginModel, selectedSong: Song) {
 }
 
 @Composable
-fun Horizontal(loginModel: loginModel, selectedSong: Song) {
+fun Horizontal(loginModel: LoginModel, selectedSong: Song) {
     Row(
         Modifier
             .fillMaxSize()
+            .background(MyColors().colorList[1])
     ) {
         Column(
             Modifier
@@ -99,7 +105,8 @@ fun Horizontal(loginModel: loginModel, selectedSong: Song) {
 }
 
 @Composable
-fun StaticText(){
+fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
+
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -117,41 +124,18 @@ fun StaticText(){
             color = arrayMyColor[2],
             modifier = Modifier.padding(2.dp)
         )
-    }
-}
-
-@Composable
-fun DescriptionText(loginModel: loginModel, selectedSong: Song) {
-
-    val myColors = MyColors()
-    val arrayMyColor = myColors.colorList
-
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
         Text(
-            text = "${selectedSong.name}",
+            text = "${selectedSong.name} - ${selectedSong.artist}",
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = 32.sp,
             color = arrayMyColor[5],
             modifier = Modifier.padding(2.dp)
         )
-        Text(
-            text = "${selectedSong.artist}",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = arrayMyColor[5],
-            modifier = Modifier.padding(2.dp).alpha(0.55F)
-        )
     }
 }
 
 @Composable
-fun AlbumCover(loginModel: loginModel, selectedSong: Song) {
+fun AlbumCover(loginModel: LoginModel, selectedSong: Song) {
 
     Box(
         modifier = Modifier
@@ -174,9 +158,9 @@ fun AlbumCover(loginModel: loginModel, selectedSong: Song) {
 
 @OptIn(ObsoleteCoroutinesApi::class)
 @Composable
-fun SliderDisplay(loginModel: loginModel) {
+fun SliderDisplay(loginModel: LoginModel) {
     val songDuration = loginModel.mediaPlayer?.duration?.toFloat() ?: 0f
-    var songPosition by remember { mutableStateOf(0f) }
+    var songPosition by remember { mutableFloatStateOf(0f) }
     val isPlaying = loginModel.isPlaying.collectAsState()
 
     val myColors = MyColors()
@@ -236,23 +220,37 @@ fun formatTime(timeInMillis: Float): String {
 }
 
 @Composable
-fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
-    var repeatMode by remember { mutableStateOf(false) }
-    var repeatIcon by remember { mutableStateOf(R.drawable.repeat_off_24) }
-    var shuffleMode by remember { mutableStateOf(false) }
-    var shuffleIcon by remember { mutableStateOf(R.drawable.shuffle_off_24) }
+fun ButtonDisplay(loginModel: LoginModel, selectedSong: Song) {
+    val shuffleIcon by remember { mutableIntStateOf(R.drawable.shuffle_off_24) }
+
+    val isPlaying by loginModel.isPlaying.collectAsState()
+    val repeatMode by loginModel.isRepeatMode.collectAsState()
+    var repeatIcon by remember { mutableStateOf(if (repeatMode) R.drawable.repeat_on_24 else R.drawable.repeat_off_24) }
+
+
+    val playIcon = if (isPlaying) R.drawable.home_24 else R.drawable.play_arrow_24
     var playSong by remember { mutableStateOf(false) }
-    var playIcon by remember { mutableStateOf(R.drawable.pause_24) }
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
+
     LaunchedEffect(playSong) {
         if (playSong) {
-            loginModel.startSong(selectedSong)
+            val sliderPosition = loginModel.mediaPlayer?.currentPosition ?: 0
+            if (sliderPosition > 0) {
+                loginModel.resumeSong(sliderPosition)
+            } else {
+                loginModel.startSong(selectedSong)
+            }
         } else {
             loginModel.stopSong()
         }
+    }
+
+    LaunchedEffect(repeatMode){
+        repeatIcon = if (repeatMode) R.drawable.repeat_on_24
+        else R.drawable.repeat_off_24
     }
 
     Row(
@@ -263,13 +261,8 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         TextButton(
-            onClick = { /* TODO */
-                repeatMode = !repeatMode
-                if (repeatMode) repeatIcon = R.drawable.repeat_on_24
-                else repeatIcon = R.drawable.repeat_off_24
-            },
-            modifier = Modifier
-                .weight(1f)
+            onClick = { loginModel.toggleRepeatMode() },
+            modifier = Modifier.weight(1f)
         ) {
             Icon(
                 painter = painterResource(id = repeatIcon),
@@ -280,7 +273,7 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
             )
         }
         TextButton(
-            onClick = { /* TODO */ },
+            onClick = { loginModel.playPreviousSong() },
             modifier = Modifier
                 .weight(1f)
         ) {
@@ -294,22 +287,27 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
             )
         }
         TextButton(
-            onClick = { playSong = !playSong
-                if (playSong) playIcon = R.drawable.play_24
-                else playIcon = R.drawable.pause_24},
+            onClick = {
+                playSong = !playSong
+                if (playSong) {
+                    loginModel.startSong(selectedSong)
+                } else {
+                    loginModel.stopSong()
+                }
+            },
             modifier = Modifier
                 .weight(1f)
         ) {
             Icon(
                 painter = painterResource(id = playIcon),
-                contentDescription = "Play",
+                contentDescription = if (isPlaying) "Stop" else "Play",
                 tint = arrayMyColor[4],
                 modifier = Modifier
                     .size(82.dp)
             )
         }
         TextButton(
-            onClick = { /* TODO */ },
+            onClick = { loginModel.playNextSong() },
             modifier = Modifier
                 .weight(1f)
         ) {
@@ -322,11 +320,7 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
             )
         }
         TextButton(
-            onClick = { /* TODO */
-                shuffleMode = !shuffleMode
-                if (shuffleMode) shuffleIcon = R.drawable.shuffle_on_24
-                else shuffleIcon = R.drawable.shuffle_off_24
-            },
+            onClick = { loginModel.shuffleSong() },
             modifier = Modifier
                 .weight(1f)
         ) {
