@@ -22,6 +22,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,64 +39,70 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.alubias.spotifail.R
+import com.alubias.spotifail.model.Song
 import com.alubias.spotifail.model.loginModel
 import com.alubias.spotifail.ui.theme.MyColors
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.ticker
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun Responsive(actividad: Activity, navController: NavHostController, loginModel: loginModel){
+fun Responsive(actividad: Activity, navController: NavHostController, loginModel: loginModel) {
     val tamanyo = calculateWindowSizeClass(activity = actividad)
     println(tamanyo.widthSizeClass)
-    if(tamanyo.heightSizeClass == WindowHeightSizeClass.Compact){
-        Horizontal(loginModel)
-    }else{
-        Vertical(loginModel)
+    val selectedSong = loginModel.songList.first()
+    if (tamanyo.heightSizeClass == WindowHeightSizeClass.Compact) {
+        Horizontal(loginModel, selectedSong)
+    } else {
+        Vertical(loginModel, selectedSong)
     }
 }
 
 @Composable
-fun Vertical(loginModel: loginModel) {
+fun Vertical(loginModel: loginModel, selectedSong: Song) {
     Column(
-        Modifier.fillMaxSize()
+        Modifier
+            .fillMaxSize()
             .background(MyColors().colorList[1]),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        DescriptionText(loginModel)
-        AlbumCover(loginModel)
-        SliderDisplay()
-        ButtonDisplay()
+        DescriptionText(loginModel, selectedSong)
+        AlbumCover(loginModel, selectedSong)
+        SliderDisplay(loginModel)
+        ButtonDisplay(loginModel, selectedSong)
     }
 }
 
 @Composable
-fun Horizontal(loginModel: loginModel) {
+fun Horizontal(loginModel: loginModel, selectedSong: Song) {
     Row(
-        Modifier.fillMaxSize()
-        .background(MyColors().colorList[1])
+        Modifier
+            .fillMaxSize()
+            .background(MyColors().colorList[1])
     ) {
         Column(
             Modifier
                 .weight(1f)
                 .fillMaxSize()
         ) {
-            AlbumCover(loginModel)
+            AlbumCover(loginModel, selectedSong)
         }
         Column(
             Modifier
                 .weight(1f)
-                .fillMaxSize()) {
-            DescriptionText(loginModel)
-            SliderDisplay()
-            ButtonDisplay()
+                .fillMaxSize()
+        ) {
+            DescriptionText(loginModel, selectedSong)
+            SliderDisplay(loginModel)
+            ButtonDisplay(loginModel, selectedSong)
         }
     }
 }
 
 @Composable
-fun DescriptionText(loginModel: loginModel) {
-    val songName = loginModel.songName
-    val artistName = loginModel.artistName
+fun DescriptionText(loginModel: loginModel, selectedSong: Song) {
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
@@ -114,7 +122,7 @@ fun DescriptionText(loginModel: loginModel) {
             modifier = Modifier.padding(2.dp)
         )
         Text(
-            text = "$songName - $artistName",
+            text = "${selectedSong.name} - ${selectedSong.artist}",
             fontWeight = FontWeight.Bold,
             fontSize = 32.sp,
             color = arrayMyColor[5],
@@ -124,7 +132,7 @@ fun DescriptionText(loginModel: loginModel) {
 }
 
 @Composable
-fun AlbumCover(loginModel: loginModel) {
+fun AlbumCover(loginModel: loginModel, selectedSong: Song) {
 
     Box(
         modifier = Modifier
@@ -132,8 +140,8 @@ fun AlbumCover(loginModel: loginModel) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            //Provisio
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            //Provisional
+            painter = painterResource(id = selectedSong.photo),
             contentDescription = "Album Cover Image",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
@@ -145,27 +153,36 @@ fun AlbumCover(loginModel: loginModel) {
 
 }
 
+@OptIn(ObsoleteCoroutinesApi::class)
 @Composable
-fun SliderDisplay() {
-
-    var songValue by remember { mutableStateOf(0f) }
-    var songDuration by remember { mutableStateOf(0f) }
+fun SliderDisplay(loginModel: loginModel) {
+    val songDuration = loginModel.mediaPlayer?.duration?.toFloat() ?: 0f
+    var songPosition by remember { mutableStateOf(0f) }
+    val isPlaying = loginModel.isPlaying.collectAsState()
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
+
+    LaunchedEffect(key1 = isPlaying.value) {
+        if (loginModel.isPlaying.value) {
+            val tickerChannel = ticker(delayMillis = 1000, initialDelayMillis = 0)
+            for (event in tickerChannel) {
+                songPosition = loginModel.mediaPlayer?.currentPosition?.toFloat() ?: 0f
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .padding(16.dp, 2.dp)
     ) {
         Slider(
-            value = songValue,
-            onValueChange = { sliderValue_ ->
-                songValue = sliderValue_
+            value = songPosition,
+            onValueChange = { newPosition ->
+                songPosition = newPosition
+                loginModel.mediaPlayer?.seekTo(newPosition.toInt())
             },
-            onValueChangeFinished = {
-                Log.d("MainActivity", "sliderValue = $songValue")
-            },
-            valueRange = 0f..10f,
+            valueRange = 0f..songDuration,
             colors = SliderDefaults.colors(
                 thumbColor = arrayMyColor[3],
                 activeTrackColor = arrayMyColor[4],
@@ -179,12 +196,12 @@ fun SliderDisplay() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                String.format("%.2f", songValue / 60).replace(',', '.'),
+                text = formatTime(songPosition),
                 fontSize = 24.sp,
                 color = arrayMyColor[3]
             )
             Text(
-                String.format("%.2f", songDuration / 60).replace(',', '.'),
+                text = formatTime(songDuration),
                 fontSize = 24.sp,
                 color = arrayMyColor[3]
             )
@@ -192,15 +209,31 @@ fun SliderDisplay() {
     }
 }
 
+fun formatTime(timeInMillis: Float): String {
+    val totalSeconds = (timeInMillis / 1000).toInt()
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return String.format("%02d:%02d", minutes, seconds)
+}
+
 @Composable
-fun ButtonDisplay() {
+fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
     var repeatMode by remember { mutableStateOf(false) }
     var repeatIcon by remember { mutableStateOf(R.drawable.repeat_off_24) }
     var shuffleMode by remember { mutableStateOf(false) }
     var shuffleIcon by remember { mutableStateOf(R.drawable.shuffle_off_24) }
+    var playSong by remember { mutableStateOf(false) }
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
+
+    LaunchedEffect(playSong) {
+        if (playSong) {
+            loginModel.startSong(selectedSong)
+        } else {
+            loginModel.stopSong()
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -241,7 +274,7 @@ fun ButtonDisplay() {
             )
         }
         TextButton(
-            onClick = { /* TODO */ },
+            onClick = { playSong = !playSong },
             modifier = Modifier
                 .weight(1f)
         ) {
@@ -286,3 +319,4 @@ fun ButtonDisplay() {
         }
     }
 }
+
