@@ -1,9 +1,7 @@
 package com.alubias.spotifail.jukebox
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
@@ -44,7 +43,6 @@ import com.alubias.spotifail.model.loginModel
 import com.alubias.spotifail.ui.theme.MyColors
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ticker
-import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -63,11 +61,11 @@ fun Responsive(actividad: Activity, navController: NavHostController, loginModel
 fun Vertical(loginModel: loginModel, selectedSong: Song) {
     Column(
         Modifier
-            .fillMaxSize()
-            .background(MyColors().colorList[1]),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        StaticText()
         DescriptionText(loginModel, selectedSong)
         AlbumCover(loginModel, selectedSong)
         SliderDisplay(loginModel)
@@ -80,7 +78,6 @@ fun Horizontal(loginModel: loginModel, selectedSong: Song) {
     Row(
         Modifier
             .fillMaxSize()
-            .background(MyColors().colorList[1])
     ) {
         Column(
             Modifier
@@ -102,8 +99,7 @@ fun Horizontal(loginModel: loginModel, selectedSong: Song) {
 }
 
 @Composable
-fun DescriptionText(loginModel: loginModel, selectedSong: Song) {
-
+fun StaticText(){
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -121,12 +117,35 @@ fun DescriptionText(loginModel: loginModel, selectedSong: Song) {
             color = arrayMyColor[2],
             modifier = Modifier.padding(2.dp)
         )
+    }
+}
+
+@Composable
+fun DescriptionText(loginModel: loginModel, selectedSong: Song) {
+
+    val myColors = MyColors()
+    val arrayMyColor = myColors.colorList
+
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Text(
-            text = "${selectedSong.name} - ${selectedSong.artist}",
+            text = "${selectedSong.name}",
             fontWeight = FontWeight.Bold,
-            fontSize = 32.sp,
+            fontSize = 24.sp,
             color = arrayMyColor[5],
             modifier = Modifier.padding(2.dp)
+        )
+        Text(
+            text = "${selectedSong.artist}",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = arrayMyColor[5],
+            modifier = Modifier.padding(2.dp).alpha(0.55F)
         )
     }
 }
@@ -223,6 +242,7 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
     var shuffleMode by remember { mutableStateOf(false) }
     var shuffleIcon by remember { mutableStateOf(R.drawable.shuffle_off_24) }
     var playSong by remember { mutableStateOf(false) }
+    var playIcon by remember { mutableStateOf(R.drawable.pause_24) }
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
@@ -274,17 +294,18 @@ fun ButtonDisplay(loginModel: loginModel, selectedSong: Song) {
             )
         }
         TextButton(
-            onClick = { playSong = !playSong },
+            onClick = { playSong = !playSong
+                if (playSong) playIcon = R.drawable.play_24
+                else playIcon = R.drawable.pause_24},
             modifier = Modifier
                 .weight(1f)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.arrow_circle_24),
+                painter = painterResource(id = playIcon),
                 contentDescription = "Play",
                 tint = arrayMyColor[4],
                 modifier = Modifier
                     .size(82.dp)
-                    .rotate(-90F)
             )
         }
         TextButton(
