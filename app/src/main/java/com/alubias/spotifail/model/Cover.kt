@@ -1,4 +1,4 @@
-package com.alubias.spotifail.cover
+package com.alubias.spotifail.model
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
@@ -29,14 +29,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.alubias.spotifail.navigation.Rutas
 import com.alubias.spotifail.ui.theme.MyColors
 
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun coverScreen() {
+fun CoverScreen(navController: NavHostController) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -61,15 +62,15 @@ fun coverScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            logo()
-            description()
-            StartButton()
+            Logo()
+            Description()
+            StartButton(navController)
         }
     }
 }
 
 @Composable
-fun logo(){
+fun Logo(){
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -120,7 +121,7 @@ fun logo(){
 
 
 @Composable
-fun description(){
+fun Description(){
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
     Text(
@@ -133,12 +134,12 @@ fun description(){
 }
 
 @Composable
-fun StartButton() {
+fun StartButton(navController: NavHostController) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
     TextButton(
-        onClick = { /* todo */ },
+        onClick = { navController.navigate(Rutas.MainActivity.ruta) },
         modifier = Modifier.padding(2.dp),
         colors = ButtonDefaults.buttonColors(containerColor = arrayMyColor[4]),
         border = BorderStroke(4.dp, arrayMyColor[2])

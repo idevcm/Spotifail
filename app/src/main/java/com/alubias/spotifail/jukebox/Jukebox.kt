@@ -21,6 +21,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +62,13 @@ fun Responsive(actividad: Activity, navController: NavHostController, loginModel
     } else {
         Vertical(loginModel, selectedSong.value)
     }
+
+    DisposableEffect(key1 = navController.currentBackStackEntry) {
+        onDispose {
+            loginModel.stopSong()
+            loginModel.resetMediaPlayer()
+        }
+    }
 }
 
 @Composable
@@ -73,8 +81,8 @@ fun Vertical(loginModel: LoginModel, selectedSong: Song) {
         verticalArrangement = Arrangement.Center
     ) {
         StaticText()
-        DescriptionText(loginModel, selectedSong)
-        AlbumCover(loginModel, selectedSong)
+        DescriptionText(selectedSong)
+        AlbumCover(selectedSong)
         SliderDisplay(loginModel)
         ButtonDisplay(loginModel, selectedSong)
     }
@@ -92,14 +100,14 @@ fun Horizontal(loginModel: LoginModel, selectedSong: Song) {
                     .weight(1f)
                     .fillMaxSize()
             ) {
-                AlbumCover(loginModel, selectedSong)
+                AlbumCover(selectedSong)
             }
             Column(
                 Modifier
                     .weight(1f)
                     .fillMaxSize()
             ) {
-                DescriptionText(loginModel, selectedSong)
+                DescriptionText(selectedSong)
                 SliderDisplay(loginModel)
                 ButtonDisplay(loginModel, selectedSong)
             }
@@ -127,7 +135,7 @@ fun StaticText(){
     }
 }
 @Composable
-fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
+fun DescriptionText(selectedSong: Song) {
 
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
@@ -159,7 +167,7 @@ fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
 }
 
 @Composable
-fun AlbumCover(loginModel: LoginModel, selectedSong: Song) {
+fun AlbumCover(selectedSong: Song) {
 
     Box(
         modifier = Modifier
@@ -249,7 +257,7 @@ fun ButtonDisplay(loginModel: LoginModel, selectedSong: Song) {
 
     val isPlaying by loginModel.isPlaying.collectAsState()
     val repeatMode by loginModel.isRepeatMode.collectAsState()
-    var repeatIcon by remember { mutableStateOf(if (repeatMode) R.drawable.repeat_on_24 else R.drawable.repeat_off_24) }
+    var repeatIcon by remember { mutableIntStateOf(if (repeatMode) R.drawable.repeat_on_24 else R.drawable.repeat_off_24) }
 
 
     val playIcon = if (isPlaying) R.drawable.pause_24 else R.drawable.play_24

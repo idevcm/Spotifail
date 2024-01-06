@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
@@ -12,30 +13,29 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.alubias.spotifail.R
+import com.alubias.spotifail.navigation.Rutas
 import com.alubias.spotifail.ui.theme.MyColors
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyScaffold(content: @Composable () -> Unit) {
-    var presses by remember { mutableIntStateOf(0) }
-
+fun MyScaffold(navController: NavController, content: @Composable () -> Unit) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
+
     Scaffold(
+
         topBar = {
             TopAppBar(
                 colors = topAppBarColors(
@@ -71,6 +71,8 @@ fun MyScaffold(content: @Composable () -> Unit) {
             BottomAppBar(
                 containerColor = arrayMyColor[0],
                 contentColor = arrayMyColor[2],
+                modifier = Modifier
+                    .height(50.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -85,13 +87,19 @@ fun MyScaffold(content: @Composable () -> Unit) {
                             .size(28.dp),
                         tint = arrayMyColor[2]
                     )
-                    Icon(
-                        painter = painterResource(id = R.drawable.home_24),
-                        contentDescription = "home button",
-                        modifier = Modifier
-                            .size(28.dp),
-                        tint = arrayMyColor[2]
-                    )
+
+                    TextButton(onClick = {
+
+                        navController.navigate(Rutas.Cover.ruta) }) {
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.home_24),
+                            contentDescription = "home button",
+                            modifier = Modifier
+                                .size(28.dp),
+                            tint = arrayMyColor[2]
+                        )
+                    }
                     Icon(
                         painter = painterResource(id = R.drawable.headphones_24),
                         contentDescription = "jukebox button",

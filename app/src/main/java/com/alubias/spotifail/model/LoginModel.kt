@@ -95,4 +95,8 @@ class LoginModel(private val context: Context) : ViewModel() {
     fun toggleRepeatMode() {
         _isRepeatMode.value = !_isRepeatMode.value
     }
+
+    fun resetMediaPlayer() {
+        mediaPlayer?.reset()
+    }
 }
