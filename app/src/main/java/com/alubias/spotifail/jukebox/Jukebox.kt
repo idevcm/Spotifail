@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
@@ -40,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.alubias.spotifail.R
-import com.alubias.spotifail.model.Song
 import com.alubias.spotifail.model.LoginModel
+import com.alubias.spotifail.model.Song
 import com.alubias.spotifail.ui.theme.MyColors
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ticker
@@ -71,6 +72,7 @@ fun Vertical(loginModel: LoginModel, selectedSong: Song) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        StaticText()
         DescriptionText(loginModel, selectedSong)
         AlbumCover(loginModel, selectedSong)
         SliderDisplay(loginModel)
@@ -80,33 +82,31 @@ fun Vertical(loginModel: LoginModel, selectedSong: Song) {
 
 @Composable
 fun Horizontal(loginModel: LoginModel, selectedSong: Song) {
-    Row(
-        Modifier
-            .fillMaxSize()
-            .background(MyColors().colorList[1])
-    ) {
-        Column(
+        Row(
             Modifier
-                .weight(1f)
                 .fillMaxSize()
+                .background(MyColors().colorList[1])
         ) {
-            AlbumCover(loginModel, selectedSong)
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                AlbumCover(loginModel, selectedSong)
+            }
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+            ) {
+                DescriptionText(loginModel, selectedSong)
+                SliderDisplay(loginModel)
+                ButtonDisplay(loginModel, selectedSong)
+            }
         }
-        Column(
-            Modifier
-                .weight(1f)
-                .fillMaxSize()
-        ) {
-            DescriptionText(loginModel, selectedSong)
-            SliderDisplay(loginModel)
-            ButtonDisplay(loginModel, selectedSong)
-        }
-    }
 }
-
 @Composable
-fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
-
+fun StaticText(){
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -124,12 +124,36 @@ fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
             color = arrayMyColor[2],
             modifier = Modifier.padding(2.dp)
         )
+    }
+}
+@Composable
+fun DescriptionText(loginModel: LoginModel, selectedSong: Song) {
+
+    val myColors = MyColors()
+    val arrayMyColor = myColors.colorList
+
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Text(
-            text = "${selectedSong.name} - ${selectedSong.artist}",
+            text = selectedSong.name,
             fontWeight = FontWeight.Bold,
-            fontSize = 32.sp,
+            fontSize = 24.sp,
             color = arrayMyColor[5],
             modifier = Modifier.padding(2.dp)
+        )
+        Text(
+            text = selectedSong.artist,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = arrayMyColor[5],
+            modifier = Modifier
+                .padding(2.dp)
+                .alpha(0.55F)
         )
     }
 }
@@ -228,7 +252,7 @@ fun ButtonDisplay(loginModel: LoginModel, selectedSong: Song) {
     var repeatIcon by remember { mutableStateOf(if (repeatMode) R.drawable.repeat_on_24 else R.drawable.repeat_off_24) }
 
 
-    val playIcon = if (isPlaying) R.drawable.home_24 else R.drawable.play_arrow_24
+    val playIcon = if (isPlaying) R.drawable.pause_24 else R.drawable.play_24
     var playSong by remember { mutableStateOf(false) }
 
     val myColors = MyColors()

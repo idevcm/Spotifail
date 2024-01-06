@@ -82,21 +82,21 @@ fun MyScaffold(content: @Composable () -> Unit) {
                         painter = painterResource(id = R.drawable.list_24),
                         contentDescription = "songlist button",
                         modifier = Modifier
-                            .size(36.dp),
+                            .size(28.dp),
                         tint = arrayMyColor[2]
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.home_24),
                         contentDescription = "home button",
                         modifier = Modifier
-                            .size(36.dp),
+                            .size(28.dp),
                         tint = arrayMyColor[2]
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.headphones_24),
                         contentDescription = "jukebox button",
                         modifier = Modifier
-                            .size(36.dp),
+                            .size(28.dp),
                         tint = arrayMyColor[2]
                     )
 
