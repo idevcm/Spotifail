@@ -24,13 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alubias.spotifail.R
+import com.alubias.spotifail.model.LoginModel
 import com.alubias.spotifail.navigation.Rutas
 import com.alubias.spotifail.ui.theme.MyColors
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyScaffold(navController: NavController, content: @Composable () -> Unit) {
+fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @Composable () -> Unit) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -49,20 +50,25 @@ fun MyScaffold(navController: NavController, content: @Composable () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_24),
-                            contentDescription = "go back arrow icon",
-                            modifier = Modifier
-                                .size(28.dp),
-                            tint = arrayMyColor[4]
-                        )
-                        Text(
-                            text = "SpotiFail",
-                            color = arrayMyColor[4],
-                            modifier = Modifier
-                                .padding(20.dp, 0.dp),
-                            fontWeight = FontWeight.Bold
-                        )
+                        TextButton(onClick = {
+
+                            navController.navigate(Rutas.MainActivity.ruta)
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_back_24),
+                                contentDescription = "go back arrow icon",
+                                modifier = Modifier
+                                    .size(28.dp),
+                                tint = arrayMyColor[4]
+                            )
+                            Text(
+                                text = "SpotiFail",
+                                color = arrayMyColor[4],
+                                modifier = Modifier
+                                    .padding(20.dp, 0.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             )
@@ -80,17 +86,24 @@ fun MyScaffold(navController: NavController, content: @Composable () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.list_24),
-                        contentDescription = "songlist button",
-                        modifier = Modifier
-                            .size(28.dp),
-                        tint = arrayMyColor[2]
-                    )
-
                     TextButton(onClick = {
 
-                        navController.navigate(Rutas.Cover.ruta) }) {
+                        loginModel.resetMediaPlayer()
+                        navController.navigate(Rutas.Listas.ruta)
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.list_24),
+                            contentDescription = "songlist button",
+                            modifier = Modifier
+                                .size(28.dp),
+                            tint = arrayMyColor[2]
+                        )
+                    }
+                    TextButton(onClick = {
+
+                        navController.navigate(Rutas.Cover.ruta)
+                    }) {
+
 
                         Icon(
                             painter = painterResource(id = R.drawable.home_24),
@@ -100,16 +113,20 @@ fun MyScaffold(navController: NavController, content: @Composable () -> Unit) {
                             tint = arrayMyColor[2]
                         )
                     }
-                    Icon(
-                        painter = painterResource(id = R.drawable.headphones_24),
-                        contentDescription = "jukebox button",
-                        modifier = Modifier
-                            .size(28.dp),
-                        tint = arrayMyColor[2]
-                    )
+                    TextButton(onClick = {
 
+                        loginModel.resetMediaPlayer()
+                        navController.navigate(Rutas.Buscador.ruta)
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.headphones_24),
+                            contentDescription = "jukebox button",
+                            modifier = Modifier
+                                .size(28.dp),
+                            tint = arrayMyColor[2]
+                        )
+                    }
                 }
-
             }
         },
         containerColor = arrayMyColor[1]
