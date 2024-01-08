@@ -21,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,7 +37,6 @@ import com.alubias.spotifail.R
 import com.alubias.spotifail.navigation.Rutas
 import com.alubias.spotifail.ui.theme.MyColors
 
-//@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
     val myColors = MyColors()
@@ -59,14 +57,7 @@ fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
         start = Offset.Zero,
         end = Offset.Infinite)
 
-    DisposableEffect(key1 = navController.currentBackStackEntry) {
-        onDispose {
-            loginModel.stopSong()
-            loginModel.resetMediaPlayer()
-        }
-    }
-
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         loginModel.startSong(R.raw.titanic)
     }
 
@@ -78,7 +69,7 @@ fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
         ) {
             Logo()
             Description()
-            StartButton(navController)
+            StartButton(navController, loginModel)
         }
     }
 }
@@ -148,12 +139,15 @@ fun Description(){
 }
 
 @Composable
-fun StartButton(navController: NavHostController) {
+fun StartButton(navController: NavHostController, loginModel: LoginModel) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
     TextButton(
-        onClick = { navController.navigate(Rutas.MainActivity.ruta) },
+        onClick = {
+            loginModel.resetMediaPlayer()
+            navController.navigate(Rutas.MainActivity.ruta)
+                  },
         modifier = Modifier.padding(2.dp),
         colors = ButtonDefaults.buttonColors(containerColor = arrayMyColor[4]),
         border = BorderStroke(4.dp, arrayMyColor[2])

@@ -13,7 +13,12 @@ class LoginModel(private val context: Context) : ViewModel() {
         Song("Dale Zelda Dale", "Cucui Ganon Rosario", R.drawable.zelda, R.raw.zelda),
         Song("Los Pokimones", "Josue Yiron", R.drawable.josueyiron, R.raw.josue),
         Song("Manos en el Ano", "K0i", R.drawable.manosenelano, R.raw.manos),
-        Song("Toothless Dancing Meme", "Dancing Dragon Merch", R.drawable.toothless, R.raw.toothless),
+        Song(
+            "Toothless Dancing Meme",
+            "Dancing Dragon Merch",
+            R.drawable.toothless,
+            R.raw.toothless
+        ),
         Song("MoluscoTv", "Jovani Vázquez", R.drawable.jovanivazquez, R.raw.jovani),
         Song("F*ck The USA", "Exploited", R.drawable.exploited, R.raw.exploited)
     )
@@ -54,12 +59,17 @@ class LoginModel(private val context: Context) : ViewModel() {
     }
 
     fun startSong(songEntered: Int) {
+        resetMediaPlayer()
         mediaPlayer = MediaPlayer.create(context, songEntered).apply {
             setOnCompletionListener {
                 this.start()
             }
         }
+        Log.d("TAG", "startSong: ${mediaPlayer?.duration}")
         mediaPlayer?.start()
+        Log.d("TAG", "startSong: ${mediaPlayer?.isPlaying}")
+
+        _isPlaying.value = true
     }
 
     fun stopSong() {
@@ -67,6 +77,7 @@ class LoginModel(private val context: Context) : ViewModel() {
         mediaPlayer?.pause()
         _isPlaying.value = false
     }
+
 
     fun resumeSong(sliderPosition: Int) {
         mediaPlayer?.seekTo(sliderPosition)

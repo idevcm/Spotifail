@@ -31,7 +31,11 @@ import com.alubias.spotifail.ui.theme.MyColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @Composable () -> Unit) {
+fun MyScaffold(
+    navController: NavController,
+    loginModel: LoginModel,
+    content: @Composable () -> Unit
+) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -87,6 +91,7 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         .fillMaxWidth()
                 ) {
                     TextButton(onClick = {
+                        loginModel.resetMediaPlayer()
                         navController.navigate(Rutas.Listas.ruta)
                     }) {
                         Icon(
@@ -98,10 +103,9 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         )
                     }
                     TextButton(onClick = {
+                        loginModel.resetMediaPlayer()
                         navController.navigate(Rutas.Cover.ruta)
                     }) {
-
-
                         Icon(
                             painter = painterResource(id = R.drawable.home_24),
                             contentDescription = "home button",
@@ -111,6 +115,8 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         )
                     }
                     TextButton(onClick = {
+
+                        loginModel.resetMediaPlayer()
                         navController.navigate(Rutas.Buscador.ruta)
                     }) {
                         Icon(
@@ -129,7 +135,7 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(), // Add this line
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(25.dp),
         ) {
             content()

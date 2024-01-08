@@ -21,7 +21,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.alubias.spotifail.R
 import com.alubias.spotifail.model.LoginModel
 import com.alubias.spotifail.model.Song
@@ -50,7 +48,7 @@ import kotlinx.coroutines.channels.ticker
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun Responsive(actividad: Activity, navController: NavHostController, loginModel: LoginModel) {
+fun Responsive(actividad: Activity, loginModel: LoginModel) {
 
     val tamanyo = calculateWindowSizeClass(activity = actividad)
 
@@ -61,13 +59,6 @@ fun Responsive(actividad: Activity, navController: NavHostController, loginModel
         Horizontal(loginModel, selectedSong.value)
     } else {
         Vertical(loginModel, selectedSong.value)
-    }
-
-    DisposableEffect(key1 = navController.currentBackStackEntry) {
-        onDispose {
-            loginModel.stopSong()
-            loginModel.resetMediaPlayer()
-        }
     }
 }
 
@@ -168,7 +159,6 @@ fun DescriptionText(selectedSong: Song) {
 
 @Composable
 fun AlbumCover(selectedSong: Song) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -185,7 +175,6 @@ fun AlbumCover(selectedSong: Song) {
                 .clip(RoundedCornerShape(24.dp)),
         )
     }
-
 }
 
 @OptIn(ObsoleteCoroutinesApi::class)

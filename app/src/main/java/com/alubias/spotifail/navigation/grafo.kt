@@ -23,13 +23,13 @@ fun GrafoNavegacion(actividad: MainActivity, loginModel: LoginModel) {
                 CoverScreen(navController, loginModel)
             }
             composable(Rutas.MainActivity.ruta) {
-                Responsive(actividad = actividad, navController, loginModel)
+                Responsive(actividad = actividad, loginModel)
             }
             composable(Rutas.Listas.ruta) {
                 ListasScreen()
             }
             composable(Rutas.Buscador.ruta) {
-                BuscadorScreen(loginModel, navController)
+                BuscadorScreen(loginModel)
             }
         }
     }
