@@ -87,8 +87,6 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         .fillMaxWidth()
                 ) {
                     TextButton(onClick = {
-
-                        loginModel.resetMediaPlayer()
                         navController.navigate(Rutas.Listas.ruta)
                     }) {
                         Icon(
@@ -100,7 +98,6 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         )
                     }
                     TextButton(onClick = {
-
                         navController.navigate(Rutas.Cover.ruta)
                     }) {
 
@@ -114,8 +111,6 @@ fun MyScaffold(navController: NavController, loginModel: LoginModel , content: @
                         )
                     }
                     TextButton(onClick = {
-
-                        loginModel.resetMediaPlayer()
                         navController.navigate(Rutas.Buscador.ruta)
                     }) {
                         Icon(

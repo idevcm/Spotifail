@@ -20,7 +20,7 @@ fun GrafoNavegacion(actividad: MainActivity, loginModel: LoginModel) {
     MyScaffold(navController,loginModel) {
         NavHost(navController = navController, startDestination = Rutas.Cover.ruta) {
             composable(Rutas.Cover.ruta) {
-                CoverScreen(navController)
+                CoverScreen(navController, loginModel)
             }
             composable(Rutas.MainActivity.ruta) {
                 Responsive(actividad = actividad, navController, loginModel)
@@ -29,7 +29,7 @@ fun GrafoNavegacion(actividad: MainActivity, loginModel: LoginModel) {
                 ListasScreen()
             }
             composable(Rutas.Buscador.ruta) {
-                BuscadorScreen()
+                BuscadorScreen(loginModel, navController)
             }
         }
     }

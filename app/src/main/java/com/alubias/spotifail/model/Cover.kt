@@ -21,6 +21,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.alubias.spotifail.R
 import com.alubias.spotifail.navigation.Rutas
 import com.alubias.spotifail.ui.theme.MyColors
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CoverScreen(navController: NavHostController) {
+fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -55,6 +58,17 @@ fun CoverScreen(navController: NavHostController) {
         500.0f to colorAnimation,
         start = Offset.Zero,
         end = Offset.Infinite)
+
+    DisposableEffect(key1 = navController.currentBackStackEntry) {
+        onDispose {
+            loginModel.stopSong()
+            loginModel.resetMediaPlayer()
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        loginModel.startSong(R.raw.titanic)
+    }
 
     Box (modifier = Modifier.background(gradient)){
         Column(

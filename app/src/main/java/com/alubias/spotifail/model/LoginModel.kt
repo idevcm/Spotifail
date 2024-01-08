@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 class LoginModel(private val context: Context) : ViewModel() {
     private val _songList = arrayOf(
+        Song("Dale Zelda Dale", "Cucui Ganon Rosario", R.drawable.zelda, R.raw.zelda),
         Song("Los Pokimones", "Josue Yiron", R.drawable.josueyiron, R.raw.josue),
         Song("Manos en el Ano", "K0i", R.drawable.manosenelano, R.raw.manos),
+        Song("Toothless Dancing Meme", "Dancing Dragon Merch", R.drawable.toothless, R.raw.toothless),
         Song("MoluscoTv", "Jovani Vázquez", R.drawable.jovanivazquez, R.raw.jovani),
         Song("F*ck The USA", "Exploited", R.drawable.exploited, R.raw.exploited)
     )
@@ -49,6 +51,15 @@ class LoginModel(private val context: Context) : ViewModel() {
         }
         mediaPlayer?.start()
         _isPlaying.value = true
+    }
+
+    fun startSong(songEntered: Int) {
+        mediaPlayer = MediaPlayer.create(context, songEntered).apply {
+            setOnCompletionListener {
+                this.start()
+            }
+        }
+        mediaPlayer?.start()
     }
 
     fun stopSong() {
