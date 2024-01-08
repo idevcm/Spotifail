@@ -55,13 +55,14 @@ fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
         0.0f to arrayMyColor[0],
         500.0f to colorAnimation,
         start = Offset.Zero,
-        end = Offset.Infinite)
+        end = Offset.Infinite
+    )
 
     LaunchedEffect(key1 = Unit) {
         loginModel.startSong(R.raw.titanic)
     }
 
-    Box (modifier = Modifier.background(gradient)){
+    Box(modifier = Modifier.background(gradient)) {
         Column(
             Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,7 +76,7 @@ fun CoverScreen(navController: NavHostController, loginModel: LoginModel) {
 }
 
 @Composable
-fun Logo(){
+fun Logo() {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
 
@@ -126,7 +127,7 @@ fun Logo(){
 
 
 @Composable
-fun Description(){
+fun Description() {
     val myColors = MyColors()
     val arrayMyColor = myColors.colorList
     Text(
@@ -134,7 +135,7 @@ fun Description(){
         fontSize = 24.sp,
         color = arrayMyColor[1],
         modifier = Modifier
-            .padding(2.dp,12.dp)
+            .padding(2.dp, 12.dp)
     )
 }
 
@@ -147,7 +148,7 @@ fun StartButton(navController: NavHostController, loginModel: LoginModel) {
         onClick = {
             loginModel.resetMediaPlayer()
             navController.navigate(Rutas.MainActivity.ruta)
-                  },
+        },
         modifier = Modifier.padding(2.dp),
         colors = ButtonDefaults.buttonColors(containerColor = arrayMyColor[4]),
         border = BorderStroke(4.dp, arrayMyColor[2])

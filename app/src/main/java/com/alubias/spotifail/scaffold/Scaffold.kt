@@ -55,7 +55,7 @@ fun MyScaffold(
                             .fillMaxWidth()
                     ) {
                         TextButton(onClick = {
-
+                            loginModel.resetMediaPlayer()
                             navController.navigate(Rutas.MainActivity.ruta)
                         }) {
                             Icon(
